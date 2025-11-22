@@ -15,29 +15,69 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QLabel, QPushButton, QSizePolicy,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
+    QSizePolicy, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(762, 535)
+        Form.resize(1212, 594)
+        self.verticalLayout = QVBoxLayout(Form)
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.selectinputimage = QPushButton(Form)
         self.selectinputimage.setObjectName(u"selectinputimage")
-        self.selectinputimage.setGeometry(QRect(220, 10, 301, 24))
+
+        self.verticalLayout.addWidget(self.selectinputimage)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.inputimagelabel = QLabel(Form)
         self.inputimagelabel.setObjectName(u"inputimagelabel")
-        self.inputimagelabel.setGeometry(QRect(60, 110, 271, 291))
-        self.inputimagelabel.setMaximumSize(QSize(300, 300))
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.inputimagelabel.sizePolicy().hasHeightForWidth())
+        self.inputimagelabel.setSizePolicy(sizePolicy)
+        self.inputimagelabel.setMinimumSize(QSize(300, 300))
+        self.inputimagelabel.setMaximumSize(QSize(512, 512))
+        self.inputimagelabel.setScaledContents(False)
+
+        self.horizontalLayout.addWidget(self.inputimagelabel)
+
         self.outputimagelabel = QLabel(Form)
         self.outputimagelabel.setObjectName(u"outputimagelabel")
-        self.outputimagelabel.setGeometry(QRect(420, 100, 281, 300))
-        self.outputimagelabel.setMinimumSize(QSize(161, 161))
-        self.outputimagelabel.setMaximumSize(QSize(300, 300))
+        sizePolicy.setHeightForWidth(self.outputimagelabel.sizePolicy().hasHeightForWidth())
+        self.outputimagelabel.setSizePolicy(sizePolicy)
+        self.outputimagelabel.setMinimumSize(QSize(300, 300))
+        self.outputimagelabel.setMaximumSize(QSize(1024, 1024))
+        self.outputimagelabel.setScaledContents(False)
+
+        self.horizontalLayout.addWidget(self.outputimagelabel)
+
+        self.enhancedimage = QLabel(Form)
+        self.enhancedimage.setObjectName(u"enhancedimage")
+        sizePolicy.setHeightForWidth(self.enhancedimage.sizePolicy().hasHeightForWidth())
+        self.enhancedimage.setSizePolicy(sizePolicy)
+        self.enhancedimage.setMinimumSize(QSize(300, 300))
+        self.enhancedimage.setMaximumSize(QSize(512, 512))
+        self.enhancedimage.setScaledContents(False)
+
+        self.horizontalLayout.addWidget(self.enhancedimage)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
         self.downloadimagebutton = QPushButton(Form)
         self.downloadimagebutton.setObjectName(u"downloadimagebutton")
-        self.downloadimagebutton.setGeometry(QRect(200, 470, 361, 24))
+
+        self.verticalLayout.addWidget(self.downloadimagebutton)
+
+        self.selectinputimage.raise_()
+        self.downloadimagebutton.raise_()
+        self.inputimagelabel.raise_()
+        self.outputimagelabel.raise_()
+        self.enhancedimage.raise_()
 
         self.retranslateUi(Form)
 
@@ -49,6 +89,7 @@ class Ui_Form(object):
         self.selectinputimage.setText(QCoreApplication.translate("Form", u"select input image", None))
         self.inputimagelabel.setText(QCoreApplication.translate("Form", u"input image", None))
         self.outputimagelabel.setText(QCoreApplication.translate("Form", u"output image", None))
+        self.enhancedimage.setText(QCoreApplication.translate("Form", u"enhanced image", None))
         self.downloadimagebutton.setText(QCoreApplication.translate("Form", u"download output", None))
     # retranslateUi
 

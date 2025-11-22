@@ -7,7 +7,7 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 import cv2
 
-from luminance_processing import luminance
+from .luminance_processing import luminance
 
 MODEL_PATH = "pseudocolor\colorization_model.keras"
 IMG_SIZE = 128
@@ -76,5 +76,6 @@ def main():
 
     plt.tight_layout()
     plt.show()
-
-main()
+# Only run main when this file is executed directly
+if __name__ == "__main__":
+    main()
