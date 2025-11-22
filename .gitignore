@@ -1,0 +1,36 @@
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# ==============================
+# VS Code
+# ==============================
+.vscode/
+*.code-workspace
+
+# ==============================
+# MacOS / Windows
+# ==============================
+.DS_Store
+Thumbs.db
+
+# ==============================
+# Data and models (do NOT track large files)
+# ==============================
+*.h5
+*.keras
+*.ckpt
+*.tfrecord
+*.npz
+*.npy
+/temp_img/
