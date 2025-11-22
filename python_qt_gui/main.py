@@ -36,10 +36,14 @@ class mywindow(QWidget):
 
             self.ui.inputimagelabel.adjustSize()
 
-            # dummy processing (copy input to output)
+            # (the code of proccesing will come here)
+            #dummy processing jsut simply coping the input to the output
             self.output_pixmap = self.input_pixmap
 
-            # show output
+
+
+
+            #show output
             self.ui.outputimagelabel.setPixmap(
     self.output_pixmap.scaled(250, 250, Qt.KeepAspectRatio)
 )
@@ -49,13 +53,13 @@ class mywindow(QWidget):
     def save_output(self):
         if self.output_pixmap:
 
-            # extract file name without extension
+            #extract input image name for defalut output image name
             base_name = os.path.splitext(os.path.basename(self.input_image_path))[0]
 
-            # default name
-            default_name = base_name + "_output.png"
+            # default out put image name 
+            default_name = base_name + "_output_image.png"
 
-            # save dialog
+            #selecting path and format of output image
             file_name, _ = QFileDialog.getSaveFileName(
                 self,
                 "Save Output Image",
@@ -64,14 +68,16 @@ class mywindow(QWidget):
             )
 
             if file_name:
+                #if threr is output image save to seleted path
                 self.output_pixmap.save(file_name)
+
                 QMessageBox.information(self, "Saved", f"Output saved to {file_name}")
 
         else:
             QMessageBox.warning(self, "No Output", "No output image to save!")
 
 
-# start
+
 app = QApplication(sys.argv)
 win = mywindow()
 win.show()
