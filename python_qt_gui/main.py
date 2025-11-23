@@ -3,7 +3,7 @@ import os
 from PySide6.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
 from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtCore import Qt
-from ui_main import Ui_Form  
+from main_ui import Ui_Form  
 import cv2 
 import numpy as np  
 #adding parent directoru to module search
@@ -32,6 +32,8 @@ class mywindow(QWidget):
         self.output_pixmap = None
         self.enhanced_pixmap = None
         self.input_image_path = None
+
+        
 
     def open_image(self):
         file_name, _ = QFileDialog.getOpenFileName(
