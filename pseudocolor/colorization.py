@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import cv2
 
 from .luminance_processing import luminance
+from .saturation_Processing import boost_saturation
 
 MODEL_PATH = "pseudocolor\colorization_model.keras"
 IMG_SIZE = 128
@@ -23,6 +24,8 @@ def perceptual_loss(y_true, y_pred):
 
 #to colorize the photo we first scale it down to 128 * 128 as that is what the model was trained on
 #this is then scaled back up to the original image size
+
+
 def colorize_image(image_path, model):
     
     img = Image.open(image_path)
@@ -44,10 +47,10 @@ def colorize_image(image_path, model):
     color_img = color_img.resize(img.size, Image.Resampling.LANCZOS)
 
 
-    enhanced_img = luminance(color_img, gray_img)
+    enhanced_img = luminance(color_img, gray_img)   
+    enhanced_img = boost_saturation(enhanced_img, factor=1.2)
 
     return gray_img, color_img, enhanced_img
-    
     
 def main():
     #we first load the model
