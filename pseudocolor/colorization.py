@@ -27,34 +27,63 @@ def perceptual_loss(y_true, y_pred):
 #to colorize the photo we first scale it down to 128 * 128 as that is what the model was trained on
 #this is then scaled back up to the original image size
 
-
 def colorize_image(image_path, model):
     
     img = Image.open(image_path)
     gray_img = img.convert('L')
 
-    
-    gray_resized = gray_img.resize((IMG_SIZE, IMG_SIZE), Image.Resampling.LANCZOS)
-    gray_arr = np.array(gray_resized, dtype=np.float32) / 255.0
-    gray_arr = np.expand_dims(gray_arr, axis=(0, -1))
+    # ---------- NEW: Ensemble variants ----------
+    def preprocess(pil_img):
+        """Resize to model size and convert to normalized array."""
+        g = pil_img.resize((IMG_SIZE, IMG_SIZE), Image.Resampling.LANCZOS)
+        g = np.array(g, dtype=np.float32) / 255.0
+        g = np.expand_dims(g, axis=(0, -1))
+        return g
 
-    #
-    pred = model.predict(gray_arr, verbose=0)[0]
-    #this clips the values to between 0 and 1, the model sometimes outputs values slightly below
-    #or above this range
-    pred = np.clip(pred, 0, 1)
-    color_img = Image.fromarray((pred * 255).astype(np.uint8))
-    
-    #we now resize it back to the original size
+    variants = []
+
+    # 1. Original grayscale
+    variants.append(preprocess(gray_img))
+
+    # 2. Horizontally flipped grayscale
+    variants.append(preprocess(gray_img.transpose(Image.FLIP_LEFT_RIGHT)))
+
+    # 3. Gamma-corrected grayscale (adds texture variation)
+    arr = np.array(gray_img).astype(np.float32) / 255.0
+    gamma = np.clip((arr ** 0.9) * 255, 0, 255).astype(np.uint8)
+    variants.append(preprocess(Image.fromarray(gamma)))
+
+    # ---------- Run model on all variants ----------
+    preds = []
+    for v in variants:
+        p = model.predict(v, verbose=0)[0]
+        p = np.clip(p, 0, 1)
+        preds.append(p)
+
+    # ---------- NEW: Average LAB a/b channels ----------
+    lab_list = []
+    for p in preds:
+        rgb = (p * 255).astype(np.uint8)
+        lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB).astype(np.float32)
+        lab_list.append(lab)
+
+    lab_avg = np.mean(lab_list, axis=0)       # smoother, richer colors
+    rgb_avg = cv2.cvtColor(lab_avg.astype(np.uint8), cv2.COLOR_LAB2RGB)
+    color_img = Image.fromarray(rgb_avg)
+    # --------- end of ensemble --------------
+
+    # Resize back to original resolution
     color_img = color_img.resize(img.size, Image.Resampling.LANCZOS)
 
-
-    enhanced_img = luminance(color_img, gray_img)   
+    # Post-processing steps
+    enhanced_img = luminance(color_img, gray_img)
     enhanced_img = boost_saturation(enhanced_img, factor=1.2)
-
     enhanced_img1 = advanced_Postprocess(enhanced_img)
 
     return gray_img, enhanced_img, enhanced_img1
+
+    
+    
     
 def main():
     #we first load the model
