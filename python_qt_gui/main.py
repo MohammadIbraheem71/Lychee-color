@@ -10,7 +10,7 @@ import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 #this is the path of model .keras file
-MODEL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pseudocolor', 'colorization_model_coco_faces.keras'))
+MODEL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pseudocolor', 'colorization_model_faces.keras'))
 
 from pseudocolor.colorization import colorize_image, perceptual_loss
 from tensorflow import keras

@@ -80,7 +80,7 @@ def colorize_image(image_path, model):
     enhanced_img = boost_saturation(enhanced_img, factor=1.2)
     enhanced_img1 = advanced_Postprocess(enhanced_img)
 
-    return gray_img, enhanced_img, enhanced_img1
+    return gray_img, color_img, enhanced_img
 
     
     
