@@ -11,6 +11,7 @@ import cv2
 from .luminance_processing import luminance
 from .saturation_Processing import boost_saturation
 from .advanced_Processing import advanced_Postprocess
+from .advanced_Processing import guided_color_refine
 
 MODEL_PATH = "pseudocolor\colorization_model.keras"
 IMG_SIZE = 128
@@ -80,7 +81,9 @@ def colorize_image(image_path, model):
     enhanced_img = boost_saturation(enhanced_img, factor=1.2)
     enhanced_img1 = advanced_Postprocess(enhanced_img)
 
-    return gray_img, color_img, enhanced_img
+    guided_filter = guided_color_refine(enhanced_img)
+
+    return gray_img, color_img, guided_filter
 
     
     
