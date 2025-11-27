@@ -14,7 +14,8 @@ from .advanced_Processing import guided_color_refine
 
 MODEL_PATH = "pseudocolor\colorization_model_faces.keras"
 IMG_SIZE = 128
-
+#this function applies gamma correction to an image
+#img is a pil image and gamma is the gamma value
 def gamma_variant(img, gamma):
     arr = np.array(img).astype(np.float32) / 255.0
     arr = np.power(arr, gamma)
@@ -23,11 +24,15 @@ def gamma_variant(img, gamma):
 
 
 #we load the model here
+#also we calculate a combination of mse and mae loss for model training
+
 def perceptual_loss(y_true, y_pred):
     mse = tf.reduce_mean(tf.square(y_true - y_pred))
     mae = tf.reduce_mean(tf.abs(y_true - y_pred))
     return 0.7 * mse + 0.3 * mae
 
+
+#changes contrast of the image using alpha and beta values which are constant amd effectc the whole image
 def contrast_variant(img, alpha=1.1, beta=0):
     arr = cv2.convertScaleAbs(np.array(img), alpha=alpha, beta=beta)
     return Image.fromarray(arr)
@@ -44,7 +49,8 @@ def colorize_image(image_path, model):
 
     W, H = img.size  # original size
 
-    # ---------- Preprocessing ----------
+    #preprocessing
+    #this is a helper function resizes image, scales it, and adds batch and channel dimension
     def preprocess(pil_img):
         g = pil_img.resize((IMG_SIZE, IMG_SIZE), Image.Resampling.LANCZOS)
         g = np.array(g, dtype=np.float32) / 255.0
@@ -53,13 +59,13 @@ def colorize_image(image_path, model):
 
     variants = []
 
-    # 1. Original grayscale
+    #1..original grayscale
     variants.append(preprocess(gray_img))
 
-    # 2. Horizontal flip
+    #2.horizontal flip
     variants.append(preprocess(gray_img.transpose(Image.FLIP_LEFT_RIGHT)))
 
-    # 3. Gamma corrected variant
+    #3.gamma corrected variant
     arr = np.array(gray_img).astype(np.float32) / 255.0
     gamma = np.clip((arr ** 0.9) * 255, 0, 255).astype(np.uint8)
     variants.append(preprocess(Image.fromarray(gamma)))
@@ -71,60 +77,72 @@ def colorize_image(image_path, model):
     variants.append(preprocess(contrast_variant(gray_img, 0.9)))
 
 
-    # ---------- Run model on all variants ----------
+    #run model on all variants
     preds = []
     for v in variants:
         pred = model.predict(v, verbose=0)[0]      # (128,128,3)
         pred = np.clip(pred, 0, 1)
         preds.append(pred)
 
-    # ---------- LAB a/b averaging ----------
+    #LAB a/b averaging
     A_list, B_list = [], []
 
     for p in preds:
+        #convert to rgb 0-255
         rgb = (p * 255).astype(np.uint8)
+        #convert to lab
         lab = cv2.cvtColor(rgb, cv2.COLOR_RGB2LAB).astype(np.float32)
 
+        #store a and b channels
         A_list.append(lab[:, :, 1])
         B_list.append(lab[:, :, 2])
 
-    # Average a and b
+    #average a and b channels
     A_avg = np.mean(A_list, axis=0)
     B_avg = np.mean(B_list, axis=0)
 
-
+    #get small L channel
     L_small = np.array(gray_img.resize((IMG_SIZE, IMG_SIZE)), dtype=np.float32)
 
+    #combine L, A, B to small lab image
     lab_small = np.zeros((IMG_SIZE, IMG_SIZE, 3), dtype=np.float32)
     lab_small[:, :, 0] = L_small
     lab_small[:, :, 1] = A_avg
     lab_small[:, :, 2] = B_avg
 
+    #convert small lab to rgb
     rgb_small = cv2.cvtColor(lab_small.astype(np.uint8), cv2.COLOR_LAB2RGB)
 
-    # ---------- UPSCALE COLOR ONLY ----------
+    # ---------- upscale color ----------
     rgb_big = cv2.resize(rgb_small, (W, H), interpolation=cv2.INTER_CUBIC)
 
-    # Convert to LAB for L replacement
+    #convert to lab for L replacement
     lab_big = cv2.cvtColor(rgb_big, cv2.COLOR_RGB2LAB).astype(np.float32)
 
-    # Replace L with FULL-RES original grayscale (sharpness restored)
+    #replace L with full resolution grayscale
     L_full = np.array(gray_img, dtype=np.float32)
     lab_big[:, :, 0] = L_full
 
+    #convert back to rgb
     rgb_final = cv2.cvtColor(lab_big.astype(np.uint8), cv2.COLOR_LAB2RGB)
     color_img = Image.fromarray(rgb_final)
 
     # ---------- post-processing ----------
+    #enhance luminance
     enhanced_img = luminance(color_img, gray_img)
+    #boost saturation
     enhanced_img1 = boost_saturation(enhanced_img, factor=1.2)
+    #apply guided color refine
     guided_filter = guided_color_refine(enhanced_img1)
 
+    #return gray, color, enhanced
     return gray_img, color_img, guided_filter
 
     
 def main():
     #we first load the model
+    #this is the main function to test colorization
+    #it loads the model, processes an example image, and shows the results
     model = keras.models.load_model(MODEL_PATH, custom_objects={'perceptual_loss': perceptual_loss})
     print("✅ Model loaded!")
     
