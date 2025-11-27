@@ -6,8 +6,9 @@ from PySide6.QtCore import Qt
 from main_ui import Ui_Form  
 import cv2 
 import numpy as np  
-#adding parent directoru to module search
+from welcome_window import WelcomeWindow
 
+#adding parent directory to module search
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 #this is the path of model .keras file
 MODEL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pseudocolor', 'colorization_model_faces.keras'))
@@ -24,6 +25,8 @@ class mywindow(QWidget):
 
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        
+        self.setWindowTitle("Image Colorization - Processing")
 
         self.ui.selectinputimage.clicked.connect(self.open_image)
         self.ui.downloadimagebutton.clicked.connect(self.save_output)
@@ -33,24 +36,15 @@ class mywindow(QWidget):
         self.enhanced_pixmap = None
         self.input_image_path = None
 
-        
-
-    def open_image(self):
-        file_name, _ = QFileDialog.getOpenFileName(
-            self, "Open Image", "", "Images (*.png *.jpg *.jpeg *.bmp)"
-        )
-
-        if not file_name:
-            return
-
+    def load_and_process_image(self, file_name):
+        """Load and process image directly without file dialog"""
         self.input_image_path = file_name
-
-        # --- Call your colorization function ---
+        
+        # Call colorization function
         gray, color, enhanced = colorize_image(self.input_image_path, self.model)
 
-        # --- Helper to convert PIL Image or numpy array to QPixmap ---
+        # Helper to convert PIL Image or numpy array to QPixmap
         def to_qpixmap(img):
-            # Convert PIL Image to numpy array if needed
             if hasattr(img, 'mode'):  # It's a PIL Image
                 img = np.array(img)
             
@@ -59,9 +53,7 @@ class mywindow(QWidget):
                 qimg = QImage(img.data, w, h, w, QImage.Format_Grayscale8)
             else:  # color image
                 h, w, ch = img.shape
-                # Check if it's RGB or BGR
                 if ch == 3:
-                    # Assume RGB from PIL, convert to format Qt expects
                     qimg = QImage(img.data, w, h, w * ch, QImage.Format_RGB888)
                 else:
                     qimg = QImage(img.data, w, h, w * ch, QImage.Format_RGB888)
@@ -72,23 +64,31 @@ class mywindow(QWidget):
         self.output_pixmap = to_qpixmap(color)
         self.enhanced_pixmap = to_qpixmap(enhanced)
 
-        # --- Display input (gray) image ---
+        # Display all images
         w, h = self.ui.inputimagelabel.width(), self.ui.inputimagelabel.height()
         self.ui.inputimagelabel.setPixmap(
             self.input_pixmap.scaled(w, h, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
 
-        # --- Display color output ---
         w2, h2 = self.ui.outputimagelabel.width(), self.ui.outputimagelabel.height()
         self.ui.outputimagelabel.setPixmap(
             self.output_pixmap.scaled(w2, h2, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
 
-        # --- Display enhanced image ---
         w3, h3 = self.ui.enhancedimage.width(), self.ui.enhancedimage.height()
         self.ui.enhancedimage.setPixmap(
             self.enhanced_pixmap.scaled(w3, h3, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
+
+    def open_image(self):
+        file_name, _ = QFileDialog.getOpenFileName(
+            self, "Open Image", "", "Images (*.png *.jpg *.jpeg *.bmp)"
+        )
+
+        if not file_name:
+            return
+
+        self.load_and_process_image(file_name)
 
     def save_output(self):
         if not self.output_pixmap:
@@ -112,6 +112,18 @@ class mywindow(QWidget):
 # --- Main ---
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    win = mywindow()
-    win.show()
+    
+    # Show welcome window first
+    welcome = WelcomeWindow()
+    main_window = mywindow()
+    
+    # Connect welcome window to main window
+    def on_image_selected(image_path):
+        welcome.hide()
+        main_window.show()
+        main_window.load_and_process_image(image_path)
+    
+    welcome.image_selected.connect(on_image_selected)
+    welcome.show()
+    
     sys.exit(app.exec())

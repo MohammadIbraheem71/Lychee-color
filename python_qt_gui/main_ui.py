@@ -23,28 +23,13 @@ class Ui_Form(object):
         if not Form.objectName():
             Form.setObjectName(u"Form")
         Form.resize(1212, 594)
-        self.selectinputimage = QPushButton(Form)
-        self.selectinputimage.setObjectName(u"selectinputimage")
-        self.selectinputimage.setGeometry(QRect(240, 20, 681, 24))
-        self.downloadimagebutton = QPushButton(Form)
-        self.downloadimagebutton.setObjectName(u"downloadimagebutton")
-        self.downloadimagebutton.setGeometry(QRect(250, 540, 731, 24))
-        self.label = QLabel(Form)
-        self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(150, 100, 181, 20))
-        self.label_2 = QLabel(Form)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setGeometry(QRect(540, 100, 131, 20))
-        self.label_3 = QLabel(Form)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setGeometry(QRect(930, 100, 141, 20))
-        self.widget = QWidget(Form)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(0, 160, 1201, 302))
-        self.horizontalLayout = QHBoxLayout(self.widget)
+        self.layoutWidget = QWidget(Form)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(0, 160, 1201, 302))
+        self.horizontalLayout = QHBoxLayout(self.layoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.inputimagelabel = QLabel(self.widget)
+        self.inputimagelabel = QLabel(self.layoutWidget)
         self.inputimagelabel.setObjectName(u"inputimagelabel")
         self.inputimagelabel.setMinimumSize(QSize(300, 300))
         self.inputimagelabel.setMaximumSize(QSize(512, 512))
@@ -52,7 +37,7 @@ class Ui_Form(object):
 
         self.horizontalLayout.addWidget(self.inputimagelabel)
 
-        self.outputimagelabel = QLabel(self.widget)
+        self.outputimagelabel = QLabel(self.layoutWidget)
         self.outputimagelabel.setObjectName(u"outputimagelabel")
         self.outputimagelabel.setMinimumSize(QSize(300, 300))
         self.outputimagelabel.setMaximumSize(QSize(1024, 1024))
@@ -60,13 +45,54 @@ class Ui_Form(object):
 
         self.horizontalLayout.addWidget(self.outputimagelabel)
 
-        self.enhancedimage = QLabel(self.widget)
+        self.enhancedimage = QLabel(self.layoutWidget)
         self.enhancedimage.setObjectName(u"enhancedimage")
         self.enhancedimage.setMinimumSize(QSize(300, 300))
         self.enhancedimage.setMaximumSize(QSize(512, 512))
         self.enhancedimage.setScaledContents(False)
 
         self.horizontalLayout.addWidget(self.enhancedimage)
+
+        self.layoutWidget1 = QWidget(Form)
+        self.layoutWidget1.setObjectName(u"layoutWidget1")
+        self.layoutWidget1.setGeometry(QRect(0, 50, 1131, 103))
+        self.horizontalLayout_2 = QHBoxLayout(self.layoutWidget1)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.label = QLabel(self.layoutWidget1)
+        self.label.setObjectName(u"label")
+        self.label.setStyleSheet(u"font: 9pt \"Segoe UI\";")
+
+        self.horizontalLayout_2.addWidget(self.label)
+
+        self.label_2 = QLabel(self.layoutWidget1)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setStyleSheet(u"font: 9pt \"Segoe Print\";\n"
+"font: 9pt \"Segoe UI\";")
+
+        self.horizontalLayout_2.addWidget(self.label_2)
+
+        self.label_3 = QLabel(self.layoutWidget1)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setStyleSheet(u"font: 9pt \"Segoe UI\";")
+
+        self.horizontalLayout_2.addWidget(self.label_3)
+
+        self.widget = QWidget(Form)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(401, 521, 441, 26))
+        self.horizontalLayout_3 = QHBoxLayout(self.widget)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.selectinputimage = QPushButton(self.widget)
+        self.selectinputimage.setObjectName(u"selectinputimage")
+
+        self.horizontalLayout_3.addWidget(self.selectinputimage)
+
+        self.downloadimagebutton = QPushButton(self.widget)
+        self.downloadimagebutton.setObjectName(u"downloadimagebutton")
+
+        self.horizontalLayout_3.addWidget(self.downloadimagebutton)
 
 
         self.retranslateUi(Form)
@@ -76,13 +102,13 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.selectinputimage.setText(QCoreApplication.translate("Form", u"Select Input Image", None))
-        self.downloadimagebutton.setText(QCoreApplication.translate("Form", u"Download Output", None))
-        self.label.setText(QCoreApplication.translate("Form", u"INPUT IMAGE", None))
-        self.label_2.setText(QCoreApplication.translate("Form", u"BASIC COLOR", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"POST PROCCESSING", None))
-        self.inputimagelabel.setText(QCoreApplication.translate("Form", u"input image", None))
-        self.outputimagelabel.setText(QCoreApplication.translate("Form", u"output image", None))
-        self.enhancedimage.setText(QCoreApplication.translate("Form", u"enhanced image", None))
+        self.inputimagelabel.setText("")
+        self.outputimagelabel.setText("")
+        self.enhancedimage.setText("")
+        self.label.setText(QCoreApplication.translate("Form", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:700; text-decoration: underline;\">INPUT IMAGE</span></p></body></html>", None))
+        self.label_2.setText(QCoreApplication.translate("Form", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:700; text-decoration: underline;\">BASIC COLOR</span></p></body></html>", None))
+        self.label_3.setText(QCoreApplication.translate("Form", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:700; text-decoration: underline;\">POST PROCCESSING</span></p></body></html>", None))
+        self.selectinputimage.setText(QCoreApplication.translate("Form", u"SELECT IMAGE", None))
+        self.downloadimagebutton.setText(QCoreApplication.translate("Form", u"SAVE OUTPUT", None))
     # retranslateUi
 
